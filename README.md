@@ -40,7 +40,7 @@ Onset is a Next.js starter that comes with step-by-step instructions to understa
 
 ## Automatic Setup
 
-## Installation
+### Installation
 
 Clone & create this repo locally with the following command:
 
@@ -567,4 +567,4 @@ Created by [@nrjdalal](https://twitter.com/nrjdalal_com) in 2023, released under
 
 ## Credits
 
-This project was inspired by [@shadcn](https://twitter.com/shadcn)'s [Taxonomy](https://github.com/shadcn-ui/taxonomy).
+This project is inspired by [@shadcn](https://twitter.com/shadcn)'s [Taxonomy](https://github.com/shadcn-ui/taxonomy).
