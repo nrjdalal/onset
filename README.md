@@ -161,7 +161,7 @@ export const cn = (...inputs: ClassValue[]) => {
 }
 ```
 
-#### 7. Update `src/app/layout.ts`
+#### 7. Update `src/app/layout.tsx`
 
 ```ts
 import './globals.css'
