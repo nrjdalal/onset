@@ -1,4 +1,3 @@
-import type { AdapterAccount } from '@auth/core/adapters'
 import {
   integer,
   pgTable,
@@ -6,9 +5,18 @@ import {
   text,
   timestamp,
 } from 'drizzle-orm/pg-core'
+import { drizzle, PostgresJsDatabase } from 'drizzle-orm/postgres-js'
+import type { AdapterAccount } from 'next-auth/adapters'
+import postgres from 'postgres'
+
+const queryClient = postgres(process.env.POSTGRES_URL as string)
+export const db: PostgresJsDatabase = drizzle(queryClient)
 
 export const users = pgTable('user', {
-  id: text('id').notNull().primaryKey(),
+  id: text('id')
+    .primaryKey()
+    .$defaultFn(() => crypto.randomUUID()),
+  publicId: text('publicId').unique().notNull(),
   name: text('name'),
   email: text('email').notNull(),
   emailVerified: timestamp('emailVerified', { mode: 'date' }),
@@ -33,12 +41,15 @@ export const accounts = pgTable(
     session_state: text('session_state'),
   },
   (account) => ({
-    compoundKey: primaryKey(account.provider, account.providerAccountId),
+    compoundKey: primaryKey({
+      columns: [account.provider, account.providerAccountId],
+    }),
   }),
 )
 
 export const sessions = pgTable('session', {
-  sessionToken: text('sessionToken').notNull().primaryKey(),
+  id: text('id').notNull(),
+  sessionToken: text('sessionToken').primaryKey(),
   userId: text('userId')
     .notNull()
     .references(() => users.id, { onDelete: 'cascade' }),
@@ -53,6 +64,6 @@ export const verificationTokens = pgTable(
     expires: timestamp('expires', { mode: 'date' }).notNull(),
   },
   (vt) => ({
-    compoundKey: primaryKey(vt.identifier, vt.token),
+    compoundKey: primaryKey({ columns: [vt.identifier, vt.token] }),
   }),
 )
