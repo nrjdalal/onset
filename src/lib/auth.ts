@@ -1,72 +1,75 @@
-import { db } from '@/lib/db'
-import { users } from '@/lib/db/schema'
+import { db, users } from '@//lib/database'
+import { generateId } from '@/lib/utils'
 import { DrizzleAdapter } from '@auth/drizzle-adapter'
 import { eq } from 'drizzle-orm'
-import { NextAuthOptions } from 'next-auth'
-import type { User } from 'next-auth'
-import { Adapter } from 'next-auth/adapters'
-import GoogleProvider from 'next-auth/providers/google'
+import NextAuth from 'next-auth'
+import GitHub from 'next-auth/providers/github'
 
-export const authOptions: NextAuthOptions = {
-  debug: process.env.NODE_ENV === 'development',
-  adapter: DrizzleAdapter(db) as Adapter,
-  providers: [
-    GoogleProvider({
-      clientId: process.env.GOOGLE_CLIENT_ID as string,
-      clientSecret: process.env.GOOGLE_CLIENT_SECRET as string,
-    }),
-  ],
-  pages: {
-    signIn: '/access',
+export const { handlers, signIn, signOut, auth } = NextAuth({
+  adapter: {
+    ...DrizzleAdapter(db),
+    async createUser(user) {
+      return await db
+        .insert(users)
+        .values({
+          ...user,
+          publicId: generateId(),
+        })
+        .returning()
+        .then((res) => res[0])
+    },
   },
+  providers: [GitHub],
   session: {
     strategy: 'jwt',
   },
   callbacks: {
-    async session({ token, session }) {
+    async session({ session, token }) {
       if (token) {
-        session.user.id = token.id
-        session.user.name = token.name
-        session.user.email = token.email
-        session.user.image = token.picture
+        session.user.id = token.id as string
+        session.user.publicId = token.publicId as string
+        session.user.name = token.name as string
+        session.user.email = token.email as string
+        session.user.image = token.image as string
       }
 
       return session
     },
+
     async jwt({ token, user }) {
-      const [dbUser] = await db
+      const [result] = await db
         .select()
         .from(users)
-        .where(eq(users.email, token.email || ''))
+        .where(eq(users.email, token.email as string))
         .limit(1)
 
-      if (!dbUser) {
+      if (!result) {
         if (user) {
-          token.id = user?.id
+          token.id = user.id
         }
+
         return token
       }
 
       return {
-        id: dbUser.id,
-        name: dbUser.name,
-        email: dbUser.email,
-        picture: dbUser.image,
+        id: result.id,
+        publicId: result.publicId,
+        name: result.name,
+        email: result.email,
+        image: result.image,
       }
     },
   },
-}
-
-declare module 'next-auth/jwt' {
-  interface JWT {
-    id: string
-  }
-}
+})
 
 declare module 'next-auth' {
   interface Session {
-    user: User & {
+    user: {
       id: string
+      publicId: string
+      name: string
+      email: string
+      image: string
     }
   }
 }
