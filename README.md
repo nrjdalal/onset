@@ -332,7 +332,7 @@ POSTGRES_URL="**********"
   "scripts": {
     // ...
     "db:push": "bun --env-file=.env.local drizzle-kit push:pg --config drizzle.config.ts",
-    "db:studio": "drizzle-kit studio --config drizzle.config.ts"
+    "db:studio": "bun --env-file=.env.local drizzle-kit studio --config drizzle.config.ts"
   }
   // ...
 }
@@ -356,7 +356,7 @@ bun add next-auth@beta
 
 ```env
 # ...
-NEXTAUTH_SECRET="**********"
+AUTH_SECRET="**********"
 
 AUTH_GITHUB_ID="**********"
 AUTH_GITHUB_SECRET="**********"
