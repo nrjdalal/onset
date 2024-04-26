@@ -1,23 +1,22 @@
-'use client'
+import { auth, signIn } from '@/lib/auth'
+import { redirect } from 'next/navigation'
 
-import { signIn } from 'next-auth/react'
-import Link from 'next/link'
+const Page = async () => {
+  const session = await auth()
+  if (session) return redirect('/dashboard')
 
-const Page = () => {
   return (
-    <div className="flex min-h-[100dvh] items-center justify-center gap-4">
-      <Link
-        href={'/'}
-        className="rounded-md bg-slate-900 px-8 py-2.5 text-white"
+    <div className="flex min-h-[100dvh] flex-col items-center justify-center gap-8">
+      <form
+        action={async () => {
+          'use server'
+          await signIn('github')
+        }}
       >
-        Home
-      </Link>
-      <button
-        className="rounded-md border px-8 py-2.5"
-        onClick={() => signIn('github')}
-      >
-        Continue with Github
-      </button>
+        <button className="rounded-md border px-8 py-2.5" type="submit">
+          Signin with GitHub
+        </button>
+      </form>
     </div>
   )
 }
