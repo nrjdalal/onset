@@ -500,26 +500,25 @@ export const config = {
 #### 5. Create `src/app/(auth)/access/page.tsx`
 
 ```tsx
-'use client'
+import { auth, signIn } from '@/lib/auth'
+import { redirect } from 'next/navigation'
 
-import { signIn } from 'next-auth/react'
-import Link from 'next/link'
+const Page = async () => {
+  const session = await auth()
+  if (session) return redirect('/dashboard')
 
-const Page = () => {
   return (
-    <div className="flex min-h-[100dvh] items-center justify-center gap-4">
-      <Link
-        href={'/'}
-        className="rounded-md bg-slate-900 px-8 py-2.5 text-white"
+    <div className="flex min-h-[100dvh] flex-col items-center justify-center gap-8">
+      <form
+        action={async () => {
+          'use server'
+          await signIn('github')
+        }}
       >
-        Home
-      </Link>
-      <button
-        className="rounded-md border px-8 py-2.5"
-        onClick={() => signIn('github')}
-      >
-        Continue with Github
-      </button>
+        <button className="rounded-md border px-8 py-2.5" type="submit">
+          Signin with GitHub
+        </button>
+      </form>
     </div>
   )
 }
@@ -530,26 +529,33 @@ export default Page
 #### 6. Create `src/app/(admin)/dashboard/page.tsx`
 
 ```tsx
-'use client'
+import { auth, signOut } from '@/lib/auth'
+import { redirect } from 'next/navigation'
 
-import { signOut } from 'next-auth/react'
-import Link from 'next/link'
+const Page = async () => {
+  const session = await auth()
+  if (!session) return redirect('/access')
 
-const Page = () => {
   return (
-    <div className="flex min-h-[100dvh] items-center justify-center gap-4">
-      <Link
-        href={'/'}
-        className="rounded-md bg-slate-900 px-8 py-2.5 text-white"
+    <div className="flex min-h-[100dvh] flex-col items-center justify-center gap-8">
+      <div className="text-center">
+        {Object.entries(session.user).map(([key, value]) => (
+          <p key={key}>
+            <span className="font-bold">{key}</span>: {value}
+          </p>
+        ))}
+      </div>
+
+      <form
+        action={async () => {
+          'use server'
+          await signOut()
+        }}
       >
-        Home
-      </Link>
-      <button
-        className="rounded-md border px-8 py-2.5"
-        onClick={() => signOut()}
-      >
-        Sign Out
-      </button>
+        <button className="rounded-md border px-8 py-2" type="submit">
+          Sign Out
+        </button>
+      </form>
     </div>
   )
 }
