@@ -221,7 +221,7 @@ Refs:
 - [Drizzle Postgres](https://orm.drizzle.team/docs/quick-postgresql/postgresjs)
 
 ```sh
-bun add @auth/drizzle-adapter drizzle-orm postgres
+bun add drizzle-orm postgres
 bun add -D drizzle-kit pg
 ```
 
@@ -240,7 +240,6 @@ import {
   timestamp,
 } from 'drizzle-orm/pg-core'
 import { drizzle, PostgresJsDatabase } from 'drizzle-orm/postgres-js'
-import type { AdapterAccount } from 'next-auth/adapters'
 import postgres from 'postgres'
 
 const queryClient = postgres(process.env.POSTGRES_URL as string)
@@ -263,7 +262,7 @@ export const accounts = pgTable(
     userId: text('userId')
       .notNull()
       .references(() => users.id, { onDelete: 'cascade' }),
-    type: text('type').$type<AdapterAccount['type']>().notNull(),
+    type: text('type').notNull(),
     provider: text('provider').notNull(),
     providerAccountId: text('providerAccountId').notNull(),
     refresh_token: text('refresh_token'),
@@ -350,7 +349,7 @@ bun db:push
 #### 1. Install `next-auth`
 
 ```sh
-bun add next-auth@beta
+bun add next-auth@beta @auth/drizzle-adapter
 ```
 
 #### 2. Update `.env.local`
