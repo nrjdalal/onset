@@ -365,7 +365,7 @@ AUTH_GITHUB_SECRET="**********"
 3. Create `src/lib/auth.ts`
 
 ```ts
-import { db, users } from '@/database'
+import { db, users } from '@/lib/database'
 import { generateId } from '@/lib/utils'
 import { DrizzleAdapter } from '@auth/drizzle-adapter'
 import { eq } from 'drizzle-orm'
