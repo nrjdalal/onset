@@ -222,7 +222,7 @@ Refs:
 
 ```sh
 bun add drizzle-orm postgres
-bun add -D drizzle-kit pg
+bun add -D drizzle-kit
 ```
 
 #### 2. Create `src/lib/database.ts`
@@ -309,9 +309,9 @@ import type { Config } from 'drizzle-kit'
 
 export default {
   schema: './src/lib/database.ts',
-  driver: 'pg',
+  dialect: 'postgresql',
   dbCredentials: {
-    connectionString: process.env.POSTGRES_URL as string,
+    url: process.env.POSTGRES_URL as string,
   },
 } satisfies Config
 ```
