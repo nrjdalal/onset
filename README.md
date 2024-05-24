@@ -331,8 +331,8 @@ POSTGRES_URL="**********"
   // ...
   "scripts": {
     // ...
-    "db:push": "bun --env-file=.env.local drizzle-kit push:pg --config drizzle.config.ts",
-    "db:studio": "bun --env-file=.env.local drizzle-kit studio --config drizzle.config.ts"
+    "db:push": "bun --env-file=.env.local drizzle-kit push",
+    "db:studio": "bun --env-file=.env.local drizzle-kit studio"
   }
   // ...
 }
