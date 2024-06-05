@@ -1,4 +1,6 @@
 import { auth, signIn } from '@/lib/auth'
+import { ChevronLeftIcon } from '@radix-ui/react-icons'
+import Link from 'next/link'
 import { redirect } from 'next/navigation'
 
 const Page = async () => {
@@ -6,7 +8,11 @@ const Page = async () => {
   if (session) return redirect('/dashboard')
 
   return (
-    <div className="bg-foreground/5 flex min-h-dvh items-center justify-center">
+    <div className="bg-foreground/5 grid min-h-dvh place-content-center place-items-center gap-y-12 pb-12">
+      <Link href={'/'} className="flex items-center gap-2 font-medium">
+        <ChevronLeftIcon className="bg-foreground text-background rounded-full" />{' '}
+        Back to Home
+      </Link>
       <div className="bg-background w-full max-w-sm rounded-md border p-5">
         <label className="mb-2 block font-medium">Email Address</label>
         <input
@@ -19,12 +25,19 @@ const Page = async () => {
           type="password"
         />
 
-        <button
-          className="bg-foreground text-secondary mt-6 w-full rounded-md px-8 py-1.5 shadow-sm"
-          type="submit"
+        <form
+          action={async () => {
+            'use server'
+            await signIn('email')
+          }}
         >
-          Signin
-        </button>
+          <button
+            className="bg-foreground text-secondary mt-6 w-full rounded-md px-8 py-1.5 font-medium shadow-sm"
+            type="submit"
+          >
+            Signin
+          </button>
+        </form>
 
         <div className="mx-1 my-6 flex items-center">
           <hr className="flex-1" />
