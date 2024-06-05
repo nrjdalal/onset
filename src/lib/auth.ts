@@ -1,4 +1,4 @@
-import { db, users } from '@//lib/database'
+import { db, users } from '@/lib/database'
 import { generateId } from '@/lib/utils'
 import { DrizzleAdapter } from '@auth/drizzle-adapter'
 import { eq } from 'drizzle-orm'

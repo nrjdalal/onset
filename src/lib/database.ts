@@ -1,16 +1,19 @@
 import {
+  boolean,
   integer,
   pgTable,
   primaryKey,
   text,
   timestamp,
 } from 'drizzle-orm/pg-core'
-import { drizzle, PostgresJsDatabase } from 'drizzle-orm/postgres-js'
-import type { AdapterAccount } from 'next-auth/adapters'
+import { drizzle } from 'drizzle-orm/postgres-js'
+import type { AdapterAccountType } from 'next-auth/adapters'
 import postgres from 'postgres'
 
-const queryClient = postgres(process.env.POSTGRES_URL as string)
-export const db: PostgresJsDatabase = drizzle(queryClient)
+const connectionString = process.env.POSTGRES_URL as string
+const pool = postgres(connectionString, { max: 1 })
+
+export const db = drizzle(pool)
 
 export const users = pgTable('user', {
   id: text('id')
@@ -29,7 +32,7 @@ export const accounts = pgTable(
     userId: text('userId')
       .notNull()
       .references(() => users.id, { onDelete: 'cascade' }),
-    type: text('type').$type<AdapterAccount['type']>().notNull(),
+    type: text('type').$type<AdapterAccountType>().notNull(),
     provider: text('provider').notNull(),
     providerAccountId: text('providerAccountId').notNull(),
     refresh_token: text('refresh_token'),
@@ -48,7 +51,6 @@ export const accounts = pgTable(
 )
 
 export const sessions = pgTable('session', {
-  id: text('id').notNull(),
   sessionToken: text('sessionToken').primaryKey(),
   userId: text('userId')
     .notNull()
@@ -63,7 +65,9 @@ export const verificationTokens = pgTable(
     token: text('token').notNull(),
     expires: timestamp('expires', { mode: 'date' }).notNull(),
   },
-  (vt) => ({
-    compoundKey: primaryKey({ columns: [vt.identifier, vt.token] }),
+  (verificationToken) => ({
+    compositePk: primaryKey({
+      columns: [verificationToken.identifier, verificationToken.token],
+    }),
   }),
 )
