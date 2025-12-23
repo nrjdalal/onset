@@ -36,7 +36,7 @@
     "@types/react": "^18.3.3",
     "@types/react-dom": "^18.3.0",
     "drizzle-kit": "^0.22.2",
-    "eslint": "^8.57.0",
+    "eslint": "^9.0.0",
     "eslint-config-next": "14.2.3",
     "postcss": "^8.4.38",
     "prettier": "^3.3.0",
